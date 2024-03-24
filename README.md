@@ -8,4 +8,5 @@ time-capsuleは、時間を超えてメッセージを保存するためのリ�
 brew bundle
 asdf plugin-add nodejs
 asdf install
+npm install -g pnpm
 ```

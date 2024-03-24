@@ -1,2 +1,3 @@
 # time-capsule
-Create a time capsule repository.
+
+time-capsuleは、時間を超えてメッセージを保存するためのリポジトリです。

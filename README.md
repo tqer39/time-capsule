@@ -11,7 +11,8 @@ asdf install
 npm install -g pnpm
 ```
 
-<details><summary>初回セットアップ</summary>
+<details>
+<summary>初回セットアップ</summary>
 
 ## Next.jsのプロジェクトを作成
 

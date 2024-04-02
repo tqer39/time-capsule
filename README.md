@@ -79,3 +79,18 @@ Success! Created frontend at /home/tqer39/workspace/time-capsule/frontend
 ```
 
 </details>
+
+## デプロイ
+
+### dev ブランチのデプロイ
+
+dev ブランチにマージすると自動的にデプロイされます。
+
+### prod ブランチのデプロイ
+
+prod ブランチにタグをプッシュすると自動的にデプロイされます。
+
+graph LR
+A[dev ブランチ] --> B(自動デプロイ)
+C[prod ブランチ] --> D(タグをプッシュ)
+D --> B

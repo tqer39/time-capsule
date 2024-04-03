@@ -90,7 +90,16 @@ dev ブランチにマージすると自動的にデプロイされます。
 
 prod ブランチにタグをプッシュすると自動的にデプロイされます。
 
+```mermaid
 graph LR
 A[dev ブランチ] --> B(自動デプロイ)
 C[prod ブランチ] --> D(タグをプッシュ)
 D --> B
+```
+
+## pre-commit
+
+```shell
+pre-commit install --install-hooks
+pre-commit run -a
+```

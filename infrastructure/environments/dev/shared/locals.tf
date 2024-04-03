@@ -1,5 +1,5 @@
 locals {
-  aws_account_id = "072693953877"
+  aws_account_id = "107662415716"
   aws_env_name   = "dev"
   organization   = "tqer39"
   platform       = "aws"

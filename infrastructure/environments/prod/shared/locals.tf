@@ -3,7 +3,7 @@ locals {
   aws_env_name   = "prod"
   organization   = "tqer39"
   platform       = "aws"
-  prefix         = "pl"
+  prefix         = "tc"
   owner          = "tqer39"
   region = {
     apne1 = "ap-northeast-1"

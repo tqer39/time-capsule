@@ -123,3 +123,5 @@ usecases
 bobheadxi
 SSIA
 getline
+CODEOWNERS
+asdfrc

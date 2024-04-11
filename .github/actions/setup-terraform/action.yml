@@ -14,7 +14,9 @@ runs:
     - name: Get current Terraform version
       run: |
         echo "TERRAFORM_VERSION=$(cat ./infrastructure/.terraform-version)" >> $GITHUB_ENV
-        echo $TERRAFORM_VERSION
+        echo '--------------------------'
+        echo $(cat ./infrastructure/.terraform-version)
+
       shell: bash
 
     - name: Setup Terraform

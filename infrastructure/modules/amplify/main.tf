@@ -1,7 +1,6 @@
 locals {
   branch_name = {
-    dev  = "dev"
-    prod = "main"
+    sandbox = "main"
   }[var.app_env_name]
 }
 

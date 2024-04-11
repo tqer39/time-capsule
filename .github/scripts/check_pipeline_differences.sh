@@ -53,7 +53,7 @@ readarray -t refs < <(find_references "$deploy_pipeline_path")
 echo "-- 関連/参照しているディレクトリ一覧 --"
 ref_rel_paths=("$deploy_pipeline_path") && echo "$deploy_pipeline_path"
 for ref in "${refs[@]}"; do
-  ref_rel_path=$(echo "$ref" | awk -F '/terraform/' '{print "terraform/" $2}')
+  ref_rel_path=$(echo "$ref" | awk -F '/infrastructure/' '{print "infrastructure/" $2}')
   ref_rel_paths+=("$ref_rel_path")
   echo "$ref_rel_path"
 done

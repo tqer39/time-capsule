@@ -42,7 +42,7 @@ runs:
 
         for pipeline in "${deploy_pipelines[@]}"; do
           if ! ./.github/scripts/check_pipeline_differences.sh \
-            "terraform/environments/${{ env.AWS_ENV_NAME }}/${pipeline}" \
+            "infrastructure/environments/${{ env.AWS_ENV_NAME }}/${pipeline}" \
             "$git_diff_arr" ; then
             echo "No changes in $pipeline"
           else

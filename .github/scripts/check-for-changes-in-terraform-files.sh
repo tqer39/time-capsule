@@ -10,7 +10,7 @@ echo "\$3: $3"
 git fetch origin "$2"
 git fetch origin "$3"
 git switch -C "$3"
-CHANGED_FILES="$(git diff --name-only "origin/$2" "$3" | sort -u)"
+CHANGED_FILES="$(git diff --name-only "origin/${2}" "$3" | sort -u)"
 echo "----------------------------------"
 echo "CHANGED_FILES: "
 echo "${CHANGED_FILES}"
@@ -49,7 +49,7 @@ function is_changed () {
     fi
 
     # module "..." { の次の行の source があればそのパスを列挙する
-    module_paths=$(awk '/module .+ {/{getline; if($1=="source") print $3}' "$tf_file" | sed 's/"//g')
+    module_paths=$(awk '/module .+ {/{getline; if($1=="source") print $3}' "${tf_file}" | sed 's/"//g')
     # echo "[debug] ${module_paths}: ${module_paths}"
 
     if [ -z "${module_paths}" ]; then

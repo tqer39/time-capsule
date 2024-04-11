@@ -49,7 +49,7 @@ find_references() {
   )
 }
 echo
-refs=($(find_references $deploy_pipeline_path))
+refs=($(find_references "$deploy_pipeline_path"))
 echo "-- 関連/参照しているディレクトリ一覧 --"
 ref_rel_paths=("$deploy_pipeline_path") && echo "$deploy_pipeline_path"
 for ref in "${refs[@]}"; do
@@ -64,7 +64,7 @@ echo "-- 変更/追加のあったディレクトリ一覧 --"
 for diff in "${git_diffs[@]}"; do
   diff_rel_path=$(echo "$diff" | rev | cut -d'/' -f2- | rev) # ファイル名を除去
   diff_rel_paths+=("$diff_rel_path")
-  echo $diff_rel_path
+  echo "$diff_rel_path"
 done
 
 # 照合

@@ -26,7 +26,7 @@ done
 # 　対象ディレクトリ配下参照ディレクトリ配列
 find_references() {
   (
-    dir="$1"
+    dir=$1
     # 指定されたディレクトリ内の.tfファイルを調査
     while IFS= read -r -d '' tf_file; do
       # `source = "../../xxx/xxx"` の行を取得

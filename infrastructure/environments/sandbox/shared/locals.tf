@@ -1,6 +1,6 @@
 locals {
   aws_account_id = "107662415716"
-  aws_env_name   = "dev"
+  aws_env_name   = "sandbox"
   organization   = "tqer39"
   platform       = "aws"
   prefix         = "tc"

@@ -51,18 +51,18 @@ find_references() {
 echo
 refs=($(find_references $deploy_pipeline_path))
 echo "-- 関連/参照しているディレクトリ一覧 --"
-ref_rel_paths=($deploy_pipeline_path) && echo $deploy_pipeline_path
+ref_rel_paths=("$deploy_pipeline_path") && echo "$deploy_pipeline_path"
 for ref in "${refs[@]}"; do
   ref_rel_path=$(echo "$ref" | awk -F '/terraform/' '{print "terraform/" $2}')
-  ref_rel_paths+=($ref_rel_path)
-  echo $ref_rel_path
+  ref_rel_paths+=("$ref_rel_path")
+  echo "$ref_rel_path"
 done
 
 echo
 declare -a diff_rel_paths=()
 echo "-- 変更/追加のあったディレクトリ一覧 --"
 for diff in "${git_diffs[@]}"; do
-  diff_rel_path=$(echo $diff | rev | cut -d'/' -f2- | rev) # ファイル名を除去
+  diff_rel_path=$(echo "$diff" | rev | cut -d'/' -f2- | rev) # ファイル名を除去
   diff_rel_paths+=("$diff_rel_path")
   echo $diff_rel_path
 done
@@ -72,7 +72,7 @@ declare -a changed_items=()
 for diff in "${diff_rel_paths[@]}"; do
   for ref in "${ref_rel_paths[@]}"; do
     if [ "$diff" = "$ref" ]; then
-      changed_items+=($ref)
+      changed_items+=("$ref")
     fi
   done
 done
@@ -84,7 +84,7 @@ else
   echo "マッチするディレクトリがあったので処理対象です。"
   echo "-- 関連/参照 & 変更があったディレクトリ一覧 --"
   for item in "${changed_items[@]}"; do
-    echo $item
+    echo "$item"
   done
   exit 0 # 処理対象
 fi

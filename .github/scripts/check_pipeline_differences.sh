@@ -49,7 +49,7 @@ find_references() {
   )
 }
 echo
-refs=($(find_references "$deploy_pipeline_path"))
+readarray -t refs < <(find_references "$deploy_pipeline_path")
 echo "-- 関連/参照しているディレクトリ一覧 --"
 ref_rel_paths=("$deploy_pipeline_path") && echo "$deploy_pipeline_path"
 for ref in "${refs[@]}"; do

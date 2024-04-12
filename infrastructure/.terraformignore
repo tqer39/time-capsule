@@ -1,0 +1,12 @@
+.editorconfig
+.git/
+.github/
+.gitignore
+.pre-commit-config.yaml
+.textlintcache
+.vscode/
+.yamllint.yml
+Brewfile
+LICENSE
+**.md
+renovate.json

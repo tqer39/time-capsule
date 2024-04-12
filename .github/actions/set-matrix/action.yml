@@ -1,0 +1,76 @@
+---
+name: set matrix
+
+description: set matrix
+
+inputs:
+  AWS_ENV_NAME:
+    description: AWS の環境名
+    required: true
+  BASE_BRANCH:
+    description: ベースブランチ
+    required: false
+    default: develop
+
+outputs:
+  matrix:
+    description: Terraform の実行対象ディレクトリのリスト
+    value: ${{ steps.set-matrix.outputs.matrix }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check Pipeline Filtering
+      if: |
+        (github.event_name == 'pull_request' && github.event.pull_request.base.ref != 'main')
+        || (github.event_name == 'push' && !contains('["refs/heads/develop", "refs/heads/main"]', github.ref))
+      run: |
+        echo "SHOULD_FILTER=true" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Filter Pipeline
+      if: env.SHOULD_FILTER == 'true'
+      continue-on-error: true
+      run: |
+        # pull_request, push の一部は処理対象を絞る
+        declare -a deploy_pipelines=($(cat ./.github/workflows/deploy_pipeline/${{ env.AWS_ENV_NAME }}))
+        declare -a temp=()
+
+        # ブランチ分岐時のベースブランチコミットハッシュから現在までの差分を取得する
+        git_diffs=($(git diff --name-only --diff-filter=AM $(git merge-base HEAD origin/${{ inputs.BASE_BRANCH }})..HEAD))
+        git_diff_arr=$(printf "%s," "${git_diffs[@]}")
+
+        for pipeline in "${deploy_pipelines[@]}"; do
+          if ! ./.github/scripts/check_pipeline_differences.sh \
+            "infrastructure/environments/${{ env.AWS_ENV_NAME }}/${pipeline}" \
+            "$git_diff_arr" ; then
+            echo "No changes in $pipeline"
+          else
+            # 処理対象のデプロイパイプラインを追加
+            temp+=("$pipeline")
+          fi
+        done
+
+        joined_array=$(printf "\"%s\"," "${temp[@]}")
+        echo "joined_array=$(echo "[${joined_array%,}]")" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Apply To All Items
+      if: env.SHOULD_FILTER != 'true'
+      run: |
+        # schedule, workflow_dispatch や 上記に該当しない pull_request, push の場合は全て処理対象とする
+        declare -a deploy_pipelines=($(cat ./.github/workflows/deploy_pipeline/${{ env.AWS_ENV_NAME }}))
+        joined_array=$(printf "\"%s\"," "${deploy_pipelines[@]}")
+        echo "joined_array=$(echo "[${joined_array%,}]")" >> $GITHUB_ENV
+      shell: bash
+
+    - name: make values
+      id: set-matrix
+      run: |
+        matrix=$(echo $joined_array | jq -c)
+        if [ "$matrix" == "[\"\"]" ]; then
+          joined_array='["_empty"]'
+        fi
+        echo "[debug] joined_array: ${joined_array}"
+        echo "matrix=$(echo $joined_array | jq -c)" >> $GITHUB_OUTPUT
+      shell: bash

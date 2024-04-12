@@ -1,0 +1,57 @@
+---
+editorconfig:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.editorconfig'
+
+document:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.md'
+          - '**/*.txt'
+          - '**/*.rst'
+          - 'LICENSE'
+
+infrastructure:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/actions/**terraform**/action.yml'
+          - '.github/workflows/**infrastructure**.yml'
+          - 'infrastructure/**'
+
+textlint:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/.textlint*'
+
+yamllint:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/.yamllint'
+
+markdownlint:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/.markdownlint*.json'
+
+asdf:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/.*-version'
+          - '.asdfrc'
+
+actionlint:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/.github/workflows/actionlint.yml'
+
+pre-commit:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.pre-commit-config.yaml'
+          - '.github/workflows/pre-commit.yml'
+
+CODEOWNERS:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/CODEOWNERS'

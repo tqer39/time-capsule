@@ -4,6 +4,7 @@
 exclude: |
   (?x)^(
     .+/USAGE.md
+    .+/pnpm-lock.yaml
   )$
 
 repos:

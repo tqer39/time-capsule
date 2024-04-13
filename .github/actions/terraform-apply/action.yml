@@ -32,7 +32,7 @@ runs:
       continue-on-error: true
       uses: ./.github/actions/slack-notification-failure
       with:
-        AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
+        AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID }}
         AWS_ENV_NAME: ${{ inputs.AWS_ENV_NAME }}
         MESSAGE: "インフラのデプロイが失敗しました。\npath: `${{ inputs.working-directory }}`"
         SLACK_WEBHOOK: ${{ inputs.SLACK_WEBHOOK }}

@@ -1,0 +1,58 @@
+---
+name: infrastructure - common (difference check)
+
+on:
+  workflow_call:
+    inputs:
+      AWS_ACCOUNT_ID:
+        required: true
+        type: string
+      AWS_ENV_NAME:
+        required: true
+        type: string
+      OIDC_IAM_ROLE:
+        required: true
+        type: string
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      id-token: write # For aws-actions/configure-aws-credentials
+      contents: read # For aws-actions/configure-aws-credentials
+      deployments: write # For bobheadxi/deployments
+      pull-requests: write # For bobheadxi/deployments
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: AWS Credential
+        id: aws-credential
+        uses: ./.github/actions/aws-credential
+        with:
+          oidc-iam-role: arn:aws:iam::${{ inputs.AWS_ACCOUNT_ID }}:role/${{ inputs.OIDC_IAM_ROLE }}
+
+      - name: Terraform Plan (difference check)
+        if: ${{ steps.aws-credential.outcome == 'success' }}
+        id: terraform-plan
+        uses: ./.github/actions/terraform-plan
+        with:
+          AWS_ENV_NAME: ${{ inputs.AWS_ENV_NAME }}
+          working-directory: ./infrastructure/environments/${{ inputs.AWS_ENV_NAME }}/${{ inputs.TARGET_DIRECTORY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Display Message (Terraform Plan no-changes)
+        continue-on-error: true
+        if: ${{ env.TF_PLAN_STATUS == 'no-changes' }}
+        run: echo "対象ディレクトリ ${{ inputs.TARGET_DIRECTORY }} のインフラコードと実体に差分はありませんでした"
+
+      - name: Display Message (Terraform Plan has-diff)
+        continue-on-error: true
+        if: ${{ env.TF_PLAN_STATUS == 'has-diff' }}
+        run: echo "対象ディレクトリ ${{ inputs.TARGET_DIRECTORY }} のインフラコードと実体に差分があります"
+
+      - name: Display Message (another error)
+        continue-on-error: true
+        if: ${{ failure() && env.TF_PLAN_STATUS != 'has-diff' }}
+        run: echo "difference check CIがエラー終了しました"

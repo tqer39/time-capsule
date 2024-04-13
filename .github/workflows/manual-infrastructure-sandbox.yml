@@ -8,7 +8,7 @@ on:
         type: string
         description: Terraform CLIを実行するパス。
         required: true
-        default: "./infrastructure/environments/sandbox/手で設定する"
+        default: './infrastructure/environments/sandbox/手で設定する'
       TF_TYPE:
         type: choice
         description: Terraformで実行する処理の種類

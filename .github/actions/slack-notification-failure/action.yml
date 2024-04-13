@@ -24,11 +24,11 @@ runs:
       continue-on-error: true
       uses: rtCamp/action-slack-notify@v2
       env:
-        SLACK_CHANNEL: "#ntf_time-capsule"
+        SLACK_CHANNEL: '#ntf_time-capsule'
         SLACK_COLOR: danger
-        SLACK_TITLE: "${{ inputs.AWS_ENV_NAME }}(${{ inputs.AWS_ACCOUNT_ID }}): ${{ inputs.MESSAGE }}"
-        SLACK_MESSAGE: "<!U0RFFAK9U> 確認してください"
-        SLACK_LINK_NAMES: "true"
+        SLACK_TITLE: '${{ inputs.AWS_ENV_NAME }}(${{ inputs.AWS_ACCOUNT_ID }}): ${{ inputs.MESSAGE }}'
+        SLACK_MESSAGE: '<!U0RFFAK9U> 確認してください'
+        SLACK_LINK_NAMES: 'true'
         SLACK_USERNAME: CIBot
-        SLACK_ICON_EMOJI: ":x:"
+        SLACK_ICON_EMOJI: ':x:'
         SLACK_WEBHOOK: ${{ inputs.SLACK_WEBHOOK }}

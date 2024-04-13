@@ -42,6 +42,11 @@ jobs:
     if: ${{ needs.set-matrix.outputs.matrix != '["_empty"]' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      id-token: write # For aws-actions/configure-aws-credentials
+      contents: read # For aws-actions/configure-aws-credentials
+      deployments: write # For bobheadxi/deployments
+      pull-requests: write # For bobheadxi/deployments
     strategy:
       fail-fast: false
       matrix:
@@ -99,8 +104,8 @@ jobs:
       - name: Check and delete comments
         run: |
           ./.github/scripts/delete_pr_comments.sh \
-            "kkhs" \
-            "musubi-backend-infra" \
+            "tqer39" \
+            "time-capsule" \
             "${{ env.AWS_ENV_NAME }}" \
             "${{ github.event.pull_request.number }}" \
             "${{ secrets.GITHUB_TOKEN }}"

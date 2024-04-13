@@ -3,7 +3,7 @@ name: infrastructure sandbox (difference check)
 
 on:
   schedule:
-    - cron: "0 22 * * *" # 毎日 7:00(JST) に実行
+    - cron: '0 22 * * *' # 毎日 7:00(JST) に実行
   workflow_dispatch:
 
 concurrency:
@@ -61,7 +61,7 @@ jobs:
       - name: Set Slack Message (Terraform Plan failure)
         continue-on-error: true
         if: ${{ env.TF_PLAN_STATUS == 'has-diff' }}
-        run: echo "ERROR_MSG=Musubiインフラのコードと実体のリソースに差分があります" >> "$GITHUB_ENV"
+        run: echo "ERROR_MSG=インフラのコードと実体のリソースに差分があります" >> "$GITHUB_ENV"
 
       - name: Set Slack Message (another error)
         continue-on-error: true
@@ -73,11 +73,11 @@ jobs:
         if: ${{ failure() || env.TF_PLAN_STATUS == 'has-diff' }}
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_CHANNEL: "#ntf_pj_musubi_gh_infra"
+          SLACK_CHANNEL: '#ntf_time-capsule'
           SLACK_COLOR: danger
-          SLACK_TITLE: "${{ env.AWS_ENV_NAME }}(${{ env.AWS_ACCOUNT_ID }}): ${{ env.ERROR_MSG }}"
+          SLACK_TITLE: '${{ env.AWS_ENV_NAME }}(${{ env.AWS_ACCOUNT_ID }}): ${{ env.ERROR_MSG }}'
           SLACK_MESSAGE: "<!subteam^S049GE784QJ> 確認してください。\npath: `${{ env.AWS_ENV_NAME }}/${{ matrix.directory }}`"
           SLACK_LINK_NAMES: true
-          SLACK_USERNAME: MusubiCIBot
-          SLACK_ICON_EMOJI: ":x:"
+          SLACK_USERNAME: GitHubActionsBot
+          SLACK_ICON_EMOJI: ':x:'
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

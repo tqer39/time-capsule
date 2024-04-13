@@ -41,7 +41,6 @@ jobs:
       - name: Terraform Plan
         uses: ./.github/actions/terraform-plan
         with:
-          AWS_ENV_NAME: ${{ inputs.AWS_ENV_NAME }}
           working-directory: ${{ inputs.TF_PATH }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 

@@ -1,0 +1,33 @@
+---
+name: manual - infrastructure - sandbox
+
+on:
+  workflow_dispatch:
+    inputs:
+      TF_PATH:
+        type: string
+        description: Terraform CLIを実行するパス。
+        required: true
+        default: './infrastructure/environments/sandbox/手で設定する'
+      TF_TYPE:
+        type: choice
+        description: Terraformで実行する処理の種類
+        required: true
+        default: terraform plan
+        options:
+          - terraform plan
+          - terraform apply
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terraform:
+    uses: ./.github/workflows/_manual-infrastructure-common.yml
+    with:
+      AWS_ACCOUNT_ID: 107662415716
+      AWS_ENV_NAME: sandbox
+      OIDC_IAM_ROLE: sandbox-terraform-aws-deploy
+      TF_PATH: ${{ inputs.TF_PATH }}
+      TF_TYPE: ${{ inputs.TF_TYPE }}

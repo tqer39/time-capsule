@@ -1,0 +1,73 @@
+---
+name: manual - infrastructure - common
+
+on:
+  workflow_call:
+    inputs:
+      AWS_ACCOUNT_ID:
+        required: true
+        type: string
+      AWS_ENV_NAME:
+        required: true
+        type: string
+      OIDC_IAM_ROLE:
+        required: true
+        type: string
+      TF_PATH:
+        required: true
+        type: string
+      TF_TYPE:
+        required: true
+        type: string
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      id-token: write # For aws-actions/configure-aws-credentials
+      contents: read # For aws-actions/configure-aws-credentials
+      deployments: write # For bobheadxi/deployments
+      pull-requests: write # For bobheadxi/deployments
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: AWS Credential
+        uses: ./.github/actions/aws-credential
+        with:
+          oidc-iam-role: arn:aws:iam::${{ inputs.AWS_ACCOUNT_ID }}:role/${{ inputs.OIDC_IAM_ROLE }}
+
+      - name: Terraform Plan
+        uses: ./.github/actions/terraform-plan
+        with:
+          working-directory: ${{ inputs.TF_PATH }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Start Deployment
+        if: env.TF_PLAN_STATUS == 'has-diff' && github.ref == 'refs/heads/main'
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: ${{ env.AWS_ENV_NAME }}
+
+      - name: Terraform Apply
+        if: github.event.inputs.TF_TYPE == 'terraform apply'
+        uses: ./.github/actions/terraform-apply
+        with:
+          AWS_ACCOUNT_ID: ${{ inputs.AWS_ACCOUNT_ID }}
+          AWS_ENV_NAME: ${{ inputs.AWS_ENV_NAME }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          working-directory: ${{ inputs.TF_PATH }}
+
+      - name: Finish Deployment
+        if: env.TF_PLAN_STATUS == 'has-diff' && always() && github.ref == 'refs/heads/main'
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          env: ${{ steps.deployment.outputs.env }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}

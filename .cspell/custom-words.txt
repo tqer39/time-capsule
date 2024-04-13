@@ -126,3 +126,9 @@ getline
 CODEOWNERS
 asdfrc
 kentaro
+bridgecrewio
+infrastucture
+exfiltration
+jshell
+restrictable
+DNSSEC

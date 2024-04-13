@@ -1,0 +1,25 @@
+---
+name: Setup tfcmt
+
+description: Setup tfcmt
+
+runs:
+  using: composite
+  steps:
+    - run: curl -LO https://github.com/suzuki-shunsuke/tfcmt/releases/download/v4.4.3/tfcmt_linux_amd64.tar.gz
+      shell: bash
+
+    - run: echo '9a5a6b85b22865b72a977a393284bd942ee4400476f52aed81096a0bb0bb3ca3  tfcmt_linux_amd64.tar.gz' | sha256sum --check
+      shell: bash
+
+    - run: sudo tar -C /usr/bin/ -zxf tfcmt_linux_amd64.tar.gz
+      shell: bash
+
+    - run: curl -LO https://github.com/suzuki-shunsuke/github-comment/releases/download/v3.1.0/github-comment_3.1.0_linux_amd64.tar.gz
+      shell: bash
+
+    - run: echo '8d065e8cd47b8913b7fb481fbf746553929197e3eea649a5fd1e7c6b5251d3ee  github-comment_3.1.0_linux_amd64.tar.gz' | sha256sum --check
+      shell: bash
+
+    - run: sudo tar -C /usr/bin/ -zxf github-comment_3.1.0_linux_amd64.tar.gz
+      shell: bash

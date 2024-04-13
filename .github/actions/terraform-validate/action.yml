@@ -10,23 +10,29 @@ inputs:
   working-directory:
     description: Terraform CLI 実行時のパス
     required: true
+outputs:
+  terraform-validate-outcome:
+    description: terraform validate の処理結果
+    value: ${{ steps.terraform-validate.outcome }}
 
 runs:
   using: composite
   steps:
     - name: Terraform Validate
+      id: terraform-validate
       run: terraform validate -no-color
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 
-    - uses: actions/cache@v4
-      name: Cache plugin dir
+    - name: Cache plugin dir
+      id: cache-tflint
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.tflint.d/plugins
         key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
     - name: Setup TFLint
-      uses: terraform-linters/setup-tflint@v4
+      uses: terraform-linters/setup-tflint@v4.0.0
       with:
         tflint_version: latest
 
@@ -35,7 +41,7 @@ runs:
       shell: bash
 
     - name: Init TFLint
-      run: tflint --init
+      run: tflint --chdir=${{ inputs.working-directory }} --init
       env:
         # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
         GITHUB_TOKEN: ${{ github.token }}
@@ -44,3 +50,10 @@ runs:
     - name: Run TFLint
       run: tflint --chdir=${{ inputs.working-directory }} --module
       shell: bash
+
+    - name: Checkov
+      uses: bridgecrewio/checkov-action@v12.2710.0
+      with:
+        framework: terraform
+        output_format: cli
+        directory: ${{ inputs.working-directory }}

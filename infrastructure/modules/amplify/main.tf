@@ -1,6 +1,6 @@
 locals {
   branch_name = {
-    sandbox = "main"
+    dev = "main"
   }[var.app_env_name]
 }
 

@@ -79,6 +79,9 @@ jobs:
         if: env.TF_PLAN_STATUS == 'has-diff' && contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name)
         uses: ./.github/actions/terraform-apply
         with:
+          AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
+          AWS_ENV_NAME: ${{ env.AWS_ENV_NAME }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           working-directory: ./infrastructure/environments/${{ env.AWS_ENV_NAME }}/${{ matrix.directory }}
 
       - name: Finish Deployment

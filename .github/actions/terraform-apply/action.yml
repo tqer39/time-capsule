@@ -4,6 +4,15 @@ name: Terraform Apply
 description: Terraform Apply
 
 inputs:
+  AWS_ACCOUNT_ID:
+    description: AWS アカウント ID
+    required: true
+  AWS_ENV_NAME:
+    description: 環境名
+    required: true
+  SLACK_WEBHOOK:
+    description: Slack Webhook URL
+    required: true
   working-directory:
     description: Terraform CLI 実行時のパス
     required: true
@@ -12,6 +21,23 @@ runs:
   using: composite
   steps:
     - name: Terraform Apply
+      continue-on-error: true
+      id: terraform-apply
       run: terraform apply -auto-approve
       working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Slack Notification (failure)
+      if: ${{ steps.terraform-apply.outcome == 'failure' }}
+      continue-on-error: true
+      uses: ./.github/actions/slack-notification-failure
+      with:
+        AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
+        AWS_ENV_NAME: ${{ inputs.AWS_ENV_NAME }}
+        MESSAGE: "インフラのデプロイが失敗しました。\npath: `${{ inputs.working-directory }}`"
+        SLACK_WEBHOOK: ${{ inputs.SLACK_WEBHOOK }}
+
+    - name: failure
+      if: ${{ steps.terraform-apply.outcome == 'failure' }}
+      run: exit 1
       shell: bash

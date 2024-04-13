@@ -39,6 +39,11 @@ jobs:
       fail-fast: false
       matrix:
         directory: ${{ fromJson(needs.set-matrix.outputs.matrix )}}
+    permissions:
+      id-token: write # For aws-actions/configure-aws-credentials
+      contents: read # For aws-actions/configure-aws-credentials
+      deployments: write # For bobheadxi/deployments
+      pull-requests: write # For bobheadxi/deployments
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -55,7 +60,6 @@ jobs:
         uses: ./.github/actions/terraform-plan
         with:
           working-directory: ./infrastructure/environments/${{ env.AWS_ENV_NAME }}/${{ matrix.directory }}
-          matrix-directory: ${{ matrix.directory }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set Slack Message (Terraform Plan failure)

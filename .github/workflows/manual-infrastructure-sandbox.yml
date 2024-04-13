@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   terraform:
-    uses: ./.github/workflows/_infrastructure-common.yml
+    uses: ./.github/workflows/_manual-infrastructure-common.yml
     with:
       AWS_ACCOUNT_ID: 107662415716
       AWS_ENV_NAME: sandbox

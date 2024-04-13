@@ -1,0 +1,84 @@
+---
+name: infrastructure sandbox (difference check)
+
+on:
+  schedule:
+    - cron: "0 22 * * *" # 毎日 7:00(JST) に実行
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_ACCOUNT_ID: 107662415716
+  AWS_ENV_NAME: sandbox
+  OIDC_IAM_ROLE: sandbox-terraform-aws-deploy
+
+jobs:
+  set-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set Matrix
+        id: set-matrix
+        uses: ./.github/actions/set-matrix
+        with:
+          AWS_ENV_NAME: ${{ env.AWS_ENV_NAME }}
+
+  terraform:
+    needs: [set-matrix]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        directory: ${{ fromJson(needs.set-matrix.outputs.matrix )}}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: AWS Credential
+        id: aws-credential
+        uses: ./.github/actions/aws-credential
+        with:
+          oidc-iam-role: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.OIDC_IAM_ROLE }}
+
+      - name: Terraform Plan (difference check)
+        if: ${{ steps.aws-credential.outcome == 'success' }}
+        id: terraform-plan
+        uses: ./.github/actions/terraform-plan
+        with:
+          env_name: ${{ env.AWS_ENV_NAME }}
+          working-directory: ./infrastructure/environments/${{ env.AWS_ENV_NAME }}/${{ matrix.directory }}
+          matrix-directory: ${{ matrix.directory }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Slack Message (Terraform Plan failure)
+        continue-on-error: true
+        if: ${{ env.TF_PLAN_STATUS == 'has-diff' }}
+        run: echo "ERROR_MSG=Musubiインフラのコードと実体のリソースに差分があります" >> "$GITHUB_ENV"
+
+      - name: Set Slack Message (another error)
+        continue-on-error: true
+        if: ${{ failure() && env.TF_PLAN_STATUS != 'has-diff' }}
+        run: echo "ERROR_MSG=difference check CIがエラー終了しました" >> "$GITHUB_ENV"
+
+      - name: Slack Notification (failure)
+        continue-on-error: true
+        if: ${{ failure() || env.TF_PLAN_STATUS == 'has-diff' }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: "#ntf_pj_musubi_gh_infra"
+          SLACK_COLOR: danger
+          SLACK_TITLE: "${{ env.AWS_ENV_NAME }}(${{ env.AWS_ACCOUNT_ID }}): ${{ env.ERROR_MSG }}"
+          SLACK_MESSAGE: "<!subteam^S049GE784QJ> 確認してください。\npath: `${{ env.AWS_ENV_NAME }}/${{ matrix.directory }}`"
+          SLACK_LINK_NAMES: true
+          SLACK_USERNAME: MusubiCIBot
+          SLACK_ICON_EMOJI: ":x:"
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

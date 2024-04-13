@@ -1,5 +1,5 @@
 ---
-name: infrastructure - common
+name: manual-infrastructure - common
 
 on:
   workflow_call:

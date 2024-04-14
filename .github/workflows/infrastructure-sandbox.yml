@@ -113,7 +113,7 @@ jobs:
             "${{ github.event.pull_request.number }}" \
             "${{ secrets.GITHUB_TOKEN }}"
 
-  workflow-result-infrastructure:
+  workflow-result-infrastructure-sandbox:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [terraform]

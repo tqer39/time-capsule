@@ -1,3 +1,10 @@
+/*
+ * # Usage
+ *
+ * ## Abstract
+ *
+ * - Amplifyアプリ、ブランチ、ドメイン関連付けの作成
+*/
 locals {
   branch_name = {
     dev = "main"

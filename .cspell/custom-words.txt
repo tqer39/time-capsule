@@ -134,3 +134,4 @@ restrictable
 DNSSEC
 Datasource
 fqdns
+portfolio

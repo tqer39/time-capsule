@@ -1,0 +1,131 @@
+---
+name: infrastucture - portfolio
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_ACCOUNT_ID: '072693953877'
+  AWS_ENV_NAME: portfolio
+  OIDC_IAM_ROLE: portfolio-terraform-aws-deploy
+
+jobs:
+  set-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set Matrix
+        id: set-matrix
+        uses: ./.github/actions/set-matrix
+        with:
+          AWS_ENV_NAME: ${{ env.AWS_ENV_NAME }}
+
+  terraform:
+    needs: [set-matrix]
+    if: ${{ needs.set-matrix.outputs.matrix != '["_empty"]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      id-token: write # For aws-actions/configure-aws-credentials
+      contents: read # For aws-actions/configure-aws-credentials
+      deployments: write # For bobheadxi/deployments
+      pull-requests: write # For bobheadxi/deployments
+    strategy:
+      fail-fast: false
+      matrix:
+        directory: ${{ fromJson(needs.set-matrix.outputs.matrix )}}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: AWS Credential
+        uses: ./.github/actions/aws-credential
+        with:
+          oidc-iam-role: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.OIDC_IAM_ROLE }}
+
+      - name: Terraform Plan
+        uses: ./.github/actions/terraform-plan
+        with:
+          working-directory: ./infrastructure/environments/${{ env.AWS_ENV_NAME }}/${{ matrix.directory }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Start Deployment
+        if: env.TF_PLAN_STATUS == 'has-diff' && github.ref == 'refs/heads/main'
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: ${{ env.AWS_ENV_NAME }}
+
+      - name: Terraform Apply
+        if: env.TF_PLAN_STATUS == 'has-diff' && contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name)
+        uses: ./.github/actions/terraform-apply
+        with:
+          AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
+          AWS_ENV_NAME: ${{ env.AWS_ENV_NAME }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          working-directory: ./infrastructure/environments/${{ env.AWS_ENV_NAME }}/${{ matrix.directory }}
+
+      - name: Finish Deployment
+        if: env.TF_PLAN_STATUS == 'has-diff' && always() && github.ref == 'refs/heads/main'
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          env: ${{ steps.deployment.outputs.env }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+
+  delete_pr_comments:
+    name: Delete PR Comments
+    needs: [terraform]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: contains(fromJSON('["pull_request"]'), github.event_name)
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Check and delete comments
+        run: |
+          ./.github/scripts/delete_pr_comments.sh \
+            "tqer39" \
+            "time-capsule" \
+            "${{ env.AWS_ENV_NAME }}" \
+            "${{ github.event.pull_request.number }}" \
+            "${{ secrets.GITHUB_TOKEN }}"
+
+  workflow-result-infrastructure-portfolio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [terraform]
+    if: always()
+    steps:
+      - name: Failure
+        if: >-
+          contains(needs.*.result, 'failure')
+          || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "workflow failure"
+          exit 1
+      - name: Success
+        run: |
+          echo "workflow success"

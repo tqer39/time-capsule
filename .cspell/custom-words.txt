@@ -133,3 +133,4 @@ jshell
 restrictable
 DNSSEC
 Datasource
+fqdns

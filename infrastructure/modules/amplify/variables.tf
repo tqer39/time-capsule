@@ -13,11 +13,6 @@ variable "owner" {
   description = "The owner of the repository"
 }
 
-variable "repository" {
-  type        = string
-  description = "The repository name"
-}
-
 variable "prefix" {
   type        = string
   description = "The prefix for the resources"

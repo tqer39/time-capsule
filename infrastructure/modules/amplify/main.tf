@@ -1,3 +1,10 @@
+/*
+ * # Usage
+ *
+ * ## Abstract
+ *
+ * - Amplifyアプリ、ブランチ、ドメイン関連付けの作成
+*/
 locals {
   branch_name = {
     dev = "main"
@@ -5,8 +12,7 @@ locals {
 }
 
 resource "aws_amplify_app" "this" {
-  name       = "${var.app_name}-${var.app_env_name}"
-  repository = "https://github.com/${var.owner}/${var.repository}"
+  name = "${var.app_name}-${var.app_env_name}"
 }
 
 resource "aws_amplify_branch" "this" {

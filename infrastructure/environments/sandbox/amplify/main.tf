@@ -1,9 +1,5 @@
-module "amplify" {
-  source = "../../../modules/amplify"
+module "domain" {
+  source = "../../../modules/domain"
 
-  app_name     = "time-capsule"
-  app_env_name = "dev"
-  owner        = "tqer39"
-  repository   = "time-capsule"
-  prefix       = "dev"
+  domain_name = "dev.time-capsule.tqer39.dev"
 }

@@ -30,7 +30,7 @@
 
 ### 実行コマンド
 ```bash
-cd /home/tqer39/workspace/time-capsule/frontend
+cd ./time-capsule/frontend
 npx create-next-app@latest . --typescript
 ```
 

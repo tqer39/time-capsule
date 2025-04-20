@@ -63,6 +63,8 @@ fi
 if ! command -v pnpm &> /dev/null; then
   echo "Installing pnpm..."
   npm install -g pnpm
+  # Reload shell configuration to update PATH
+  source "$SHELL_CONFIG"
 else
   echo "pnpm is already installed."
 fi
@@ -71,6 +73,6 @@ fi
 echo "Verifying installation..."
 node -v
 npm -v
-pnpm -v
+pnpm -v || { echo "pnpm command not found. Please check your PATH."; exit 1; }
 
 echo "Setup complete!"

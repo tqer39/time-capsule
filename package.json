@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "dev:frontend": "npm run dev --prefix frontend"
+    "dev:frontend": "pnpm --filter frontend dev"
   }
 }

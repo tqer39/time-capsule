@@ -1,85 +1,99 @@
-# プロジェクトドキュメント
+# Time Capsule モノレポ
 
-このドキュメントは、プロジェクトの構成や設計思想について説明します。
+このプロジェクトはモノレポ構成で、フロントエンド、バックエンド、インフラを統合的に管理しています。
 
-## 設計思想
+## セットアップ手順
 
-1. **明確な分離**
-   - `frontend`, `backend`, `infra` のように役割ごとにフォルダを分けることで、各部分の責任範囲が明確です。
-   - 生成AIはフォルダ名やファイル名からその内容を推測しやすくなります。
+以下の手順に従って、プロジェクトのセットアップを行ってください。
 
-2. **標準的な慣習に基づく**
-   - Next.js や FastAPI の一般的なプロジェクト構成に従っています。
-   - 生成AIはこれらのフレームワークの標準構成を学習しているため、提案や補完が正確になります。
+### 前提条件
 
-3. **モノレポ構成の採用**
-   - モノレポ構成は、複数のプロジェクトを一元管理できるため、依存関係やCI/CDの設定が簡単になります。
-   - 生成AIはモノレポ構成を理解しやすく、全体の依存関係や設定を把握した上で提案を行えます。
+- macOS または Linux 環境
+- `git` がインストールされていること
+- 必要に応じて `sudo` 権限
 
-4. **フォルダ名とファイル名の一貫性**
-   - `components`, `pages`, `api`, `models` など、一般的な命名規則を採用しています。
-   - 生成AIはこれらの名前をトリガーとして適切なコードを生成しやすくなります。
+### セットアップ方法
 
-5. **ドキュメントの配置**
-   - 各フォルダに `README.md` を配置することで、フォルダの目的や使用方法を記載できます。
-   - これにより、人間と生成AIの両方がプロジェクトの意図を理解しやすくなります。
+#### 方法 1: `make install` を使用
 
-## フロントエンドセットアップ
+以下のコマンドを実行して、リポジトリのセットアップを行います。
 
-以下の手順で Next.js プロジェクトをセットアップしました。
-
-### 実行コマンド
 ```bash
-cd ./time-capsule/frontend
-npx create-next-app@latest . --typescript
+make install
 ```
 
-### プロンプトへの回答
-- **Would you like to use ESLint?**: Yes
-- **Would you like to use Tailwind CSS?**: Yes
-- **Would you like your code inside a `src/` directory?**: Yes
-- **Would you like to use App Router? (recommended)**: Yes
-- **Would you like to use Turbopack for `next dev`?**: Yes
-- **Would you like to customize the import alias (`@/*` by default)?**: Yes
-- **What import alias would you like configured?**: `@/*`
+#### 方法 2: スクリプトを直接実行
 
-### 結果
-```plaintext
-Using npm.
+以下のコマンドを実行して、リポジトリのセットアップを行います。
 
-Initializing project with template: app-tw
-
-
-Installing dependencies:
-- react
-- react-dom
-- next
-
-Installing devDependencies:
-- typescript
-- @types/node
-- @types/react
-- @types/react-dom
-- @tailwindcss/postcss
-- tailwindcss
-- eslint
-- eslint-config-next
-- @eslint/eslintrc
-
-
-added 321 packages, and audited 322 packages in 32s
-
-132 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-Success! Created frontend at /home/tqer39/workspace/time-capsule/frontend
-
-npm notice
-npm notice New major version of npm available! 10.8.2 -> 11.3.0
-npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.3.0
-npm notice To update run: npm install -g npm@11.3.0
-npm notice
+```bash
+./setup-repository.sh
 ```
 
-この手順により、`frontend` ディレクトリに Next.js プロジェクトが作成されました。
+### スクリプトの内容
+
+セットアップスクリプトは以下の作業を自動的に行います。
+
+1. OS とシェルの検出
+2. 必要な依存関係のインストール
+   - macOS: `asdf` のインストール (Homebrew 経由)
+   - Linux: `asdf` のインストール (Git 経由)
+3. Node.js のインストール (`asdf` を使用)
+4. `pnpm` のインストール
+5. インストールの検証
+
+### 注意事項
+
+- スクリプトは `bash` と `zsh` の両方で動作します。
+- スクリプト実行後、シェルの設定ファイル (`~/.bashrc` または `~/.zshrc`) が更新されます。必要に応じて手動で確認してください。
+- `pnpm` コマンドが認識されない場合は、シェルを再起動するか、以下のコマンドを実行してください。
+
+```bash
+source ~/.bashrc  # bash を使用している場合
+source ~/.zshrc   # zsh を使用している場合
+```
+
+### セットアップ完了後
+
+セットアップが完了したら、以下のコマンドで各ツールのバージョンを確認してください。
+
+```bash
+node -v
+npm -v
+pnpm -v
+```
+
+すべてのバージョンが正しく表示されれば、セットアップは成功です。
+
+### フロントエンドアプリケーションの起動
+
+以下の手順で `frontend` フォルダの Next.js アプリケーションを起動できます。
+
+1. プロジェクトルートに移動します。
+
+```bash
+cd time-capsule
+```
+
+2. `pnpm` を使用して依存関係をインストールします。
+
+```bash
+pnpm install
+```
+
+3. `frontend` フォルダの開発サーバーを起動します。
+
+```bash
+pnpm --filter frontend dev
+```
+
+4. ブラウザで以下の URL にアクセスしてアプリケーションを確認します。
+
+```
+http://localhost:3000
+```
+
+### 注意事項
+
+- `pnpm` のフィルタリング機能を使用して、`frontend` フォルダのみに対してコマンドを実行しています。
+- 開発サーバーのデフォルトポートは `3000` です。他のプロセスで使用されている場合は、ポートを変更してください。

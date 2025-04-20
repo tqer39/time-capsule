@@ -8,6 +8,20 @@ echo "Setting up the repository..."
 OS=$(uname -s)
 echo "Detected OS: $OS"
 
+# Detect shell
+SHELL_NAME=$(basename "$SHELL")
+echo "Detected shell: $SHELL_NAME"
+
+# Determine shell configuration file
+if [[ "$SHELL_NAME" == "bash" ]]; then
+  SHELL_CONFIG="$HOME/.bashrc"
+elif [[ "$SHELL_NAME" == "zsh" ]]; then
+  SHELL_CONFIG="$HOME/.zshrc"
+else
+  echo "Unsupported shell: $SHELL_NAME"
+  exit 1
+fi
+
 # Install dependencies
 if [[ "$OS" == "Darwin" ]]; then
   echo "Checking dependencies for macOS..."
@@ -24,9 +38,9 @@ elif [[ "$OS" == "Linux" ]]; then
     sudo apt update
     sudo apt install -y curl git
     git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.12.0
-    echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
-    echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
-    source ~/.bashrc
+    echo '. "$HOME/.asdf/asdf.sh"' >> "$SHELL_CONFIG"
+    echo '. "$HOME/.asdf/completions/asdf.bash"' >> "$SHELL_CONFIG"
+    source "$SHELL_CONFIG"
   else
     echo "asdf is already installed."
   fi

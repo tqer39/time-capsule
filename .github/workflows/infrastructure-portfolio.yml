@@ -1,5 +1,5 @@
 ---
-name: infrastucture - sandbox
+name: infrastucture - portfolio
 
 on:
   pull_request:
@@ -15,9 +15,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  AWS_ACCOUNT_ID: 107662415716
-  AWS_ENV_NAME: sandbox
-  OIDC_IAM_ROLE: sandbox-terraform-aws-deploy
+  AWS_ACCOUNT_ID: '072693953877'
+  AWS_ENV_NAME: portfolio
+  OIDC_IAM_ROLE: portfolio-terraform-aws-deploy
 
 jobs:
   set-matrix:
@@ -113,7 +113,7 @@ jobs:
             "${{ github.event.pull_request.number }}" \
             "${{ secrets.GITHUB_TOKEN }}"
 
-  workflow-result-infrastructure-sandbox:
+  workflow-result-infrastructure-portfolio:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [terraform]

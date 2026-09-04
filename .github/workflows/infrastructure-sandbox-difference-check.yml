@@ -23,7 +23,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set Matrix
         id: set-matrix
@@ -46,7 +46,7 @@ jobs:
       pull-requests: write # For bobheadxi/deployments
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: AWS Credential
         id: aws-credential
@@ -75,7 +75,7 @@ jobs:
       - name: Slack Notification (failure)
         continue-on-error: true
         if: ${{ failure() || env.TF_PLAN_STATUS == 'has-diff' }}
-        uses: rtCamp/action-slack-notify@v2
+        uses: rtCamp/action-slack-notify@33ca3be66c6f378fe1610fd1d5258632dbed5e58 # v2
         env:
           SLACK_CHANNEL: '#ntf_time-capsule'
           SLACK_COLOR: danger

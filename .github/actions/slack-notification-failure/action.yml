@@ -22,7 +22,7 @@ runs:
   steps:
     - name: Slack Notification (failure)
       continue-on-error: true
-      uses: rtCamp/action-slack-notify@v2
+      uses: rtCamp/action-slack-notify@33ca3be66c6f378fe1610fd1d5258632dbed5e58 # v2
       env:
         SLACK_CHANNEL: '#ntf_time-capsule'
         SLACK_COLOR: danger

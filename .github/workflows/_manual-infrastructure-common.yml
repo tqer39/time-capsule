@@ -31,7 +31,7 @@ jobs:
       pull-requests: write # For bobheadxi/deployments
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: AWS Credential
         uses: ./.github/actions/aws-credential
@@ -46,7 +46,7 @@ jobs:
 
       - name: Start Deployment
         if: env.TF_PLAN_STATUS == 'has-diff' && github.ref == 'refs/heads/main'
-        uses: bobheadxi/deployments@v1
+        uses: bobheadxi/deployments@648679e8e4915b27893bd7dbc35cb504dc915bc8 # v1
         id: deployment
         with:
           step: start
@@ -64,7 +64,7 @@ jobs:
 
       - name: Finish Deployment
         if: env.TF_PLAN_STATUS == 'has-diff' && always() && github.ref == 'refs/heads/main'
-        uses: bobheadxi/deployments@v1
+        uses: bobheadxi/deployments@648679e8e4915b27893bd7dbc35cb504dc915bc8 # v1
         with:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
